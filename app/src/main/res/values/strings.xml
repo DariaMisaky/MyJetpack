@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">MyJetpack</string>
+    <string name="tip_amount">Tip amount %s</string>
+
 </resources>
