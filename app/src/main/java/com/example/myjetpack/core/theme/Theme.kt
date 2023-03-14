@@ -1,4 +1,4 @@
-package com.example.myjetpack.ui.theme
+package com.example.myjetpack.core.theme // ktlint-disable filename
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.MaterialTheme
