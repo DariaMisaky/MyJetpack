@@ -23,6 +23,7 @@ import com.example.myjetpack.core.data.BottomNavItem
 import com.example.myjetpack.core.main.favorites.FavoritesScreen
 import com.example.myjetpack.core.main.home.HomeScreen
 import com.example.myjetpack.core.main.profile.ProfileScreen
+import com.example.myjetpack.core.main.tipScreen.TipScreen
 
 @Composable
 fun Navigation(navController: NavHostController) {
@@ -35,6 +36,9 @@ fun Navigation(navController: NavHostController) {
         }
         composable(route = Screens.ProfileScreen.route) {
             ProfileScreen(navController = navController)
+        }
+        composable(route = Screens.TipScreen.route) {
+            TipScreen(navController = navController)
         }
     }
 }

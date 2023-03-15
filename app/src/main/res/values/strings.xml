@@ -3,4 +3,13 @@
     <string name="tip_amount">Tip amount %s</string>
     <string name="next_screen">Next Screen</string>
 
+
+    <string name="home_screen">Home</string>
+    <string name="home_title">Delicious food for you</string>
+
+
+
+    <string name="favorite_screen">Favorite</string>
+    <string name="profile_screen">Profile</string>
+
 </resources>
