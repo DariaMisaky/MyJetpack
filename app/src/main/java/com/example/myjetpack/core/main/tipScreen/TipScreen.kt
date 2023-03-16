@@ -23,6 +23,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.myjetpack.R
 import com.example.myjetpack.Screens
+import com.example.myjetpack.core.data.BackButton
 import com.example.myjetpack.core.data.BaseTitle
 import java.text.NumberFormat
 
@@ -31,7 +32,11 @@ fun TipScreen(navController: NavHostController) {
     var amountValue by remember { mutableStateOf("") }
     val amount = amountValue.toDoubleOrNull() ?: 0.0
     val tip = calculateTip(amount)
-    Column(modifier = Modifier.fillMaxSize().padding(horizontal = 50.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+    BackButton(navController)
+    Column(
+        modifier = Modifier.fillMaxSize().padding(horizontal = 50.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         BaseTitle(
             modifier = Modifier
                 .fillMaxWidth(0.8f)
