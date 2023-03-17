@@ -1,4 +1,4 @@
-package com.example.myjetpack
+package com.example.myjetpack.core.main
 
 sealed class Screens(val route: String) {
     object MainScreens : Screens("main_screen")

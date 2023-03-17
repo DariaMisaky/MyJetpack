@@ -18,12 +18,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.myjetpack.R
-import com.example.myjetpack.Screens
-import com.example.myjetpack.core.data.BottomNavItem
 import com.example.myjetpack.core.main.favorites.FavoritesScreen
 import com.example.myjetpack.core.main.home.HomeScreen
 import com.example.myjetpack.core.main.profile.ProfileScreen
 import com.example.myjetpack.core.main.tipScreen.TipScreen
+import com.example.myjetpack.data.models.BottomNavModel
 
 @Composable
 fun Navigation(navController: NavHostController) {
@@ -45,10 +44,10 @@ fun Navigation(navController: NavHostController) {
 
 @Composable
 fun BottomNavigationBar(
-    items: List<BottomNavItem>,
+    items: List<BottomNavModel>,
     navController: NavController,
     modifier: Modifier = Modifier,
-    onItemClicked: (BottomNavItem) -> Unit
+    onItemClicked: (BottomNavModel) -> Unit
 ) {
     val backStackEntry = navController.currentBackStackEntryAsState()
     BottomNavigation(modifier = modifier, backgroundColor = Color.White) {
@@ -75,17 +74,17 @@ fun BottomNavigationBar(
 fun PreviewNavBar() {
     BottomNavigationBar(
         items = listOf(
-            BottomNavItem(
+            BottomNavModel(
                 "Home",
                 Screens.MainScreens.route,
                 icon = Icons.Default.Home
             ),
-            BottomNavItem(
+            BottomNavModel(
                 "Favorites",
                 Screens.FavoritesScreens.route,
                 icon = ImageVector.vectorResource(id = R.drawable.nav_favorites)
             ),
-            BottomNavItem(
+            BottomNavModel(
                 "Profile",
                 Screens.ProfileScreen.route,
                 icon = ImageVector.vectorResource(id = R.drawable.nav_profile)

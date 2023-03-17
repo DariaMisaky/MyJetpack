@@ -1,4 +1,4 @@
-package com.example.myjetpack.core.data
+package com.example.myjetpack.data.models
 
 data class MealCategoryModel(
     val id: Int,

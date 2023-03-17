@@ -13,9 +13,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.navigation.compose.rememberNavController
 import com.example.myjetpack.R
-import com.example.myjetpack.Screens
-import com.example.myjetpack.core.data.BottomNavItem
 import com.example.myjetpack.core.theme.MyJetpackTheme
+import com.example.myjetpack.data.models.BottomNavModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,17 +28,17 @@ class MainActivity : ComponentActivity() {
                     {
                         BottomNavigationBar(
                             items = listOf(
-                                BottomNavItem(
+                                BottomNavModel(
                                     "Home",
                                     Screens.MainScreens.route,
                                     icon = Icons.Default.Home
                                 ),
-                                BottomNavItem(
+                                BottomNavModel(
                                     "Favorites",
                                     Screens.FavoritesScreens.route,
                                     icon = ImageVector.vectorResource(id = R.drawable.nav_favorites)
                                 ),
-                                BottomNavItem(
+                                BottomNavModel(
                                     "Profile",
                                     Screens.ProfileScreen.route,
                                     icon = ImageVector.vectorResource(id = R.drawable.nav_profile)

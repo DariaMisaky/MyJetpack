@@ -1,4 +1,4 @@
-package com.example.myjetpack.core.data // ktlint-disable filename
+package com.example.myjetpack.data // ktlint-disable filename
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.padding

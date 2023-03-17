@@ -29,10 +29,10 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.myjetpack.R
-import com.example.myjetpack.Screens
-import com.example.myjetpack.core.data.BaseTitle
-import com.example.myjetpack.core.data.MealCategoryModel
+import com.example.myjetpack.core.main.Screens
 import com.example.myjetpack.core.theme.fontSfProRounded
+import com.example.myjetpack.data.BaseTitle
+import com.example.myjetpack.data.models.MealCategoryModel
 
 @Composable
 fun HomeScreen(
