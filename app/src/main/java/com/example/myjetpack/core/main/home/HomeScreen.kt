@@ -26,20 +26,21 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.myjetpack.R
 import com.example.myjetpack.core.main.Screens
 import com.example.myjetpack.core.theme.fontSfProRounded
 import com.example.myjetpack.data.BaseTitle
-import com.example.myjetpack.data.models.MealCategoryModel
+import com.example.myjetpack.data.models.MealCategory
 
 @Composable
 fun HomeScreen(
     navController: NavHostController
 ) {
     val scrollState = rememberScrollState()
-
+    val homeViewModel = hiltViewModel<HomeViewModel>()
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -57,19 +58,7 @@ fun HomeScreen(
         Spacer(modifier = Modifier.height(16.dp))
         SearchBar(onClick = { navController.navigate(Screens.TipScreen.route) })
         Spacer(modifier = Modifier.height(24.dp))
-        MealCategoryList(
-            categories = listOf(
-                MealCategoryModel(1, "Alfred"),
-                MealCategoryModel(2, "face"),
-                MealCategoryModel(3, "9"),
-                MealCategoryModel(4, "Ani"),
-                MealCategoryModel(5, "in"),
-                MealCategoryModel(6, "data"),
-                MealCategoryModel(7, "de "),
-                MealCategoryModel(8, "7 "),
-                MealCategoryModel(8, "iunie ")
-            )
-        )
+        MealCategoryList(homeViewModel.mealCategories.value.categories)
         Spacer(modifier = Modifier.height(24.dp))
         LazyRow(contentPadding = PaddingValues(start = 50.dp)) {
             items(4) {
@@ -101,7 +90,7 @@ fun HomeScreen(
 }
 
 @Composable
-fun MealCategoryList(categories: List<MealCategoryModel>) {
+fun MealCategoryList(categories: List<MealCategory>) {
     var selectedCategoryIndex by rememberSaveable { mutableStateOf(-1) }
     LazyRow(contentPadding = PaddingValues(start = 50.dp)) {
         itemsIndexed(items = categories) { index, category ->
@@ -146,7 +135,7 @@ fun SearchBar(onClick: () -> Unit) {
 }
 
 @Composable
-fun MealCategoryItem(item: MealCategoryModel, selected: Boolean, onSelected: () -> Unit) {
+fun MealCategoryItem(item: MealCategory, selected: Boolean, onSelected: () -> Unit) {
     Column(
         Modifier
             .width(IntrinsicSize.Min)
@@ -166,7 +155,7 @@ fun MealCategoryItem(item: MealCategoryModel, selected: Boolean, onSelected: () 
 //            )
     ) {
         Text(
-            text = item.text,
+            text = item.category,
             modifier = Modifier
                 .padding(horizontal = 12.dp)
         )

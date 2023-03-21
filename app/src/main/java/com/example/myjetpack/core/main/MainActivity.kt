@@ -15,7 +15,9 @@ import androidx.navigation.compose.rememberNavController
 import com.example.myjetpack.R
 import com.example.myjetpack.core.theme.MyJetpackTheme
 import com.example.myjetpack.data.models.BottomNavModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
