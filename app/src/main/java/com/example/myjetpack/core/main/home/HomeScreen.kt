@@ -1,116 +1,223 @@
 package com.example.myjetpack.core.main.home
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.scrollable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.* // ktlint-disable no-wildcard-imports
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Button
-import androidx.compose.material.Text
-import androidx.compose.material.TextField
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.* // ktlint-disable no-wildcard-imports
 import androidx.compose.runtime.* // ktlint-disable no-wildcard-imports
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.example.myjetpack.R
-import com.example.myjetpack.Screens
-import java.text.NumberFormat
+import com.example.myjetpack.core.main.Screens
+import com.example.myjetpack.core.theme.fontSfProRounded
+import com.example.myjetpack.data.BaseTitle
+import com.example.myjetpack.data.models.MealCategory
+import com.example.myjetpack.data.models.MealItem
+import com.skydoves.landscapist.ImageOptions
+import com.skydoves.landscapist.glide.GlideImage
 
 @Composable
-fun HomeScreen(navController: NavHostController) {
-    var amountValue by remember { mutableStateOf("") }
-    val amount = amountValue.toDoubleOrNull() ?: 0.0
-    val tip = calculateTip(amount)
-    Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
-        Title(
+fun HomeScreen(
+    navController: NavHostController,
+    homeViewModel: HomeViewModel = hiltViewModel()
+) {
+    val scrollState = rememberScrollState()
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .scrollable(state = scrollState, orientation = Orientation.Vertical),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Spacer(modifier = Modifier.height(24.dp))
+        BaseTitle(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 24.dp)
+                .fillMaxWidth(0.8f)
+                .padding(horizontal = 50.dp)
+                .align(Alignment.Start),
+            R.string.home_title
         )
         Spacer(modifier = Modifier.height(16.dp))
-        EditNumberField(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp),
-            amountValue = amountValue,
-            onValueChange = { amountValue = it }
-        )
-        Spacer(Modifier.height(24.dp))
-        Text(
-            text = stringResource(id = R.string.tip_amount, tip),
-            modifier = Modifier.align(Alignment.CenterHorizontally),
-            fontWeight = FontWeight.Bold,
-            fontSize = 30.sp
-        )
-        GeneralButton(
-            modifier = Modifier
-                .fillMaxSize()
-                .wrapContentSize(Alignment.BottomCenter),
-            onClick = { navController.navigate(Screens.FavoritesScreens.route) }
-        )
+        SearchBar(onClick = { navController.navigate(Screens.TipScreen.route) })
+        Spacer(modifier = Modifier.height(24.dp))
+        MealCategoryList(homeViewModel.mealCategories.value.categories) { homeViewModel.getMealListByCategory(it) }
+        Spacer(modifier = Modifier.height(24.dp))
+        ListMeals(homeViewModel.mealList.value.meals)
     }
 }
 
 @Composable
-fun Title(modifier: Modifier) {
-    Text(
-        text = stringResource(id = R.string.app_name),
-        textAlign = TextAlign.Center,
-        modifier = modifier,
-        fontSize = 24.sp
-    )
-}
-
-@Composable
-fun EditNumberField(modifier: Modifier, amountValue: String, onValueChange: (String) -> Unit) {
-    TextField(
-        value = amountValue,
-        onValueChange = { onValueChange(it) },
-        modifier = modifier,
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-        singleLine = true,
-        label = {
-            Label(modifier = Modifier.wrapContentSize())
+fun MealCategoryList(categories: List<MealCategory>, onCategoryClicked: (category: String) -> Unit) {
+    var selectedCategoryIndex by rememberSaveable { mutableStateOf(0) }
+    LazyRow(contentPadding = PaddingValues(start = 50.dp, end = 10.dp)) {
+        itemsIndexed(items = categories) { index, category ->
+            MealCategoryItem(
+                item = category,
+                selected = selectedCategoryIndex == index
+            ) {
+                selectedCategoryIndex = index
+                onCategoryClicked(it)
+            }
         }
-    )
-}
-
-private fun calculateTip(amount: Double, tipPercent: Double = 15.0): String {
-    val tip = tipPercent / 100 * amount
-    return NumberFormat.getCurrencyInstance().format(tip)
-}
-
-@Composable
-fun Label(modifier: Modifier) {
-    Column(modifier = modifier) {
-        Image(
-            painter = painterResource(id = R.drawable.alfiesweater),
-            contentDescription = "Alfie",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .clip(CircleShape)
-                .size(20.dp)
-
-        )
-        Text(text = "Bill Amount", modifier = Modifier.fillMaxWidth())
     }
 }
 
 @Composable
-fun GeneralButton(modifier: Modifier, onClick: () -> Unit) {
-    Column(modifier = modifier) {
-        Button(onClick = onClick) {
-            Text(stringResource(id = R.string.next_screen))
+fun ListMeals(mealsList: List<MealItem>) {
+    LazyRow(contentPadding = PaddingValues(start = 50.dp)) {
+        itemsIndexed(items = mealsList) { index, meal ->
+            FoodItem(meal = meal)
+        }
+    }
+}
+
+@Composable
+fun SearchBar(onClick: () -> Unit) {
+    Card(
+        elevation = 1.dp,
+        shape = RoundedCornerShape(30.dp),
+        modifier = Modifier
+            .clickable(
+                interactionSource = MutableInteractionSource(),
+                indication = null,
+                onClick = { onClick() }
+            )
+            .fillMaxWidth()
+            .padding(horizontal = 50.dp)
+            .height(60.dp)
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 32.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.nav_favorites),
+                contentDescription = "null"
+            )
+            Text(
+                text = "Search",
+                modifier = Modifier.padding(horizontal = 14.dp)
+            )
+        }
+    }
+}
+
+@Composable
+fun MealCategoryItem(item: MealCategory, selected: Boolean, onSelected: (category: String) -> Unit) {
+    Column(
+        Modifier
+            .width(IntrinsicSize.Min)
+            .clickable(
+                interactionSource = MutableInteractionSource(),
+                indication = null,
+                onClick = { onSelected(item.category) }
+            )
+//            .selectable(
+//                selected = selected,
+//                indication = null,
+//                interactionSource = MutableInteractionSource(),
+//                onClick = {
+//                    onSelected()
+//                },
+//
+//            )
+    ) {
+        Text(
+            text = item.category,
+            modifier = Modifier
+                .padding(horizontal = 12.dp)
+        )
+        Divider(Modifier.fillMaxWidth().alpha(if (selected) 1f else 0f), Color.Red, 2.dp)
+    }
+}
+
+@Composable
+fun FoodItem(meal: MealItem) {
+    Box(
+        contentAlignment = Alignment.TopCenter,
+        modifier = Modifier
+            .padding(top = 90.dp)
+            .wrapContentSize()
+    ) {
+        CardWithText(meal)
+        GlideImage(
+            imageModel = { meal.strMealThumb },
+            loading = {
+                Box(modifier = Modifier.matchParentSize()) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.align(Alignment.Center),
+                        color = Color.Gray
+
+                    )
+                }
+            },
+            modifier = Modifier
+                .offset(y = (-90).dp)
+                .shadow(
+                    elevation = 9.dp,
+                    shape = CircleShape,
+                    clip = true
+                )
+                .padding(bottom = 4.dp)
+                .clip(CircleShape)
+                .size(164.dp)
+                .align(Alignment.TopCenter),
+            imageOptions = ImageOptions(
+                contentScale = ContentScale.Crop,
+                alignment = Alignment.Center
+            ),
+            previewPlaceholder = R.drawable.alfiesweater
+
+        )
+    }
+    Spacer(modifier = Modifier.width(16.dp))
+}
+
+@Composable
+fun CardWithText(meal: MealItem) {
+    Card(
+        shape = RoundedCornerShape(16.dp),
+        elevation = 10.dp,
+        modifier = Modifier
+            .height(300.dp)
+            .padding(bottom = 10.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .width(220.dp)
+                .fillMaxHeight(),
+            contentAlignment = Alignment.Center
+        ) {
+            Column() {
+                Text(
+                    text = meal.strMeal,
+                    fontFamily = fontSfProRounded,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    textAlign = TextAlign.Center
+                )
+            }
         }
     }
 }
@@ -118,5 +225,24 @@ fun GeneralButton(modifier: Modifier, onClick: () -> Unit) {
 @Preview(showBackground = true)
 @Composable
 fun Preview() {
-    HomeScreen(navController = rememberNavController())
+    Column(
+        modifier = Modifier
+            .fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Spacer(modifier = Modifier.height(24.dp))
+        BaseTitle(
+            modifier = Modifier
+                .fillMaxWidth(0.8f)
+                .padding(horizontal = 50.dp)
+                .align(Alignment.Start),
+            R.string.home_title
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        SearchBar(onClick = { })
+        Spacer(modifier = Modifier.height(24.dp))
+        MealCategoryList(MockedDataHome.listOfCategory) {}
+        Spacer(modifier = Modifier.height(24.dp))
+        ListMeals(MockedDataHome.listOfItems)
+    }
 }

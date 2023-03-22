@@ -1,8 +1,8 @@
-package com.example.myjetpack.core.data
+package com.example.myjetpack.data.models
 
 import androidx.compose.ui.graphics.vector.ImageVector
 
-data class BottomNavItem(
+data class BottomNavModel(
     val name: String,
     val route: String,
     val icon: ImageVector
