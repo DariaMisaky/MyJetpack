@@ -11,14 +11,14 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
-import androidx.compose.material.Divider
-import androidx.compose.material.Text
+import androidx.compose.material.* // ktlint-disable no-wildcard-imports
 import androidx.compose.runtime.* // ktlint-disable no-wildcard-imports
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -28,19 +28,22 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.example.myjetpack.R
 import com.example.myjetpack.core.main.Screens
 import com.example.myjetpack.core.theme.fontSfProRounded
 import com.example.myjetpack.data.BaseTitle
 import com.example.myjetpack.data.models.MealCategory
+import com.example.myjetpack.data.models.MealItem
+import com.skydoves.landscapist.ImageOptions
+import com.skydoves.landscapist.glide.GlideImage
 
 @Composable
 fun HomeScreen(
-    navController: NavHostController
+    navController: NavHostController,
+    homeViewModel: HomeViewModel = hiltViewModel()
 ) {
     val scrollState = rememberScrollState()
-    val homeViewModel = hiltViewModel<HomeViewModel>()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -58,47 +61,33 @@ fun HomeScreen(
         Spacer(modifier = Modifier.height(16.dp))
         SearchBar(onClick = { navController.navigate(Screens.TipScreen.route) })
         Spacer(modifier = Modifier.height(24.dp))
-        MealCategoryList(homeViewModel.mealCategories.value.categories)
+        MealCategoryList(homeViewModel.mealCategories.value.categories) { homeViewModel.getMealListByCategory(it) }
         Spacer(modifier = Modifier.height(24.dp))
-        LazyRow(contentPadding = PaddingValues(start = 50.dp)) {
-            items(4) {
-                FoodItem()
-            }
-        }
-        BaseTitle(
-            modifier = Modifier
-                .fillMaxWidth(0.8f)
-                .padding(horizontal = 50.dp)
-                .align(Alignment.Start),
-            R.string.home_title
-        )
-        BaseTitle(
-            modifier = Modifier
-                .fillMaxWidth(0.8f)
-                .padding(horizontal = 50.dp)
-                .align(Alignment.Start),
-            R.string.home_title
-        )
-        BaseTitle(
-            modifier = Modifier
-                .fillMaxWidth(0.8f)
-                .padding(horizontal = 50.dp)
-                .align(Alignment.Start),
-            R.string.home_title
-        )
+        ListMeals(homeViewModel.mealList.value.meals)
     }
 }
 
 @Composable
-fun MealCategoryList(categories: List<MealCategory>) {
-    var selectedCategoryIndex by rememberSaveable { mutableStateOf(-1) }
-    LazyRow(contentPadding = PaddingValues(start = 50.dp)) {
+fun MealCategoryList(categories: List<MealCategory>, onCategoryClicked: (category: String) -> Unit) {
+    var selectedCategoryIndex by rememberSaveable { mutableStateOf(0) }
+    LazyRow(contentPadding = PaddingValues(start = 50.dp, end = 10.dp)) {
         itemsIndexed(items = categories) { index, category ->
             MealCategoryItem(
                 item = category,
-                selected = selectedCategoryIndex == index,
-                onSelected = { selectedCategoryIndex = index }
-            )
+                selected = selectedCategoryIndex == index
+            ) {
+                selectedCategoryIndex = index
+                onCategoryClicked(it)
+            }
+        }
+    }
+}
+
+@Composable
+fun ListMeals(mealsList: List<MealItem>) {
+    LazyRow(contentPadding = PaddingValues(start = 50.dp)) {
+        itemsIndexed(items = mealsList) { index, meal ->
+            FoodItem(meal = meal)
         }
     }
 }
@@ -135,14 +124,14 @@ fun SearchBar(onClick: () -> Unit) {
 }
 
 @Composable
-fun MealCategoryItem(item: MealCategory, selected: Boolean, onSelected: () -> Unit) {
+fun MealCategoryItem(item: MealCategory, selected: Boolean, onSelected: (category: String) -> Unit) {
     Column(
         Modifier
             .width(IntrinsicSize.Min)
             .clickable(
                 interactionSource = MutableInteractionSource(),
                 indication = null,
-                onClick = { onSelected() }
+                onClick = { onSelected(item.category) }
             )
 //            .selectable(
 //                selected = selected,
@@ -159,31 +148,46 @@ fun MealCategoryItem(item: MealCategory, selected: Boolean, onSelected: () -> Un
             modifier = Modifier
                 .padding(horizontal = 12.dp)
         )
-        if (selected) {
-            Divider(Modifier.fillMaxWidth(), Color.Red, 2.dp)
-        }
+        Divider(Modifier.fillMaxWidth().alpha(if (selected) 1f else 0f), Color.Red, 2.dp)
     }
 }
 
-@Preview(showBackground = true)
 @Composable
-fun FoodItem() {
+fun FoodItem(meal: MealItem) {
     Box(
         contentAlignment = Alignment.TopCenter,
         modifier = Modifier
             .padding(top = 90.dp)
             .wrapContentSize()
     ) {
-        CardWithText()
-        Image(
-            painter = painterResource(id = R.drawable.alfiesweater),
-            contentDescription = "Alfie",
-            contentScale = ContentScale.Crop,
+        CardWithText(meal)
+        GlideImage(
+            imageModel = { meal.strMealThumb },
+            loading = {
+                Box(modifier = Modifier.matchParentSize()) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.align(Alignment.Center),
+                        color = Color.Gray
+
+                    )
+                }
+            },
             modifier = Modifier
                 .offset(y = (-90).dp)
+                .shadow(
+                    elevation = 9.dp,
+                    shape = CircleShape,
+                    clip = true
+                )
+                .padding(bottom = 4.dp)
                 .clip(CircleShape)
                 .size(164.dp)
-                .align(Alignment.TopCenter)
+                .align(Alignment.TopCenter),
+            imageOptions = ImageOptions(
+                contentScale = ContentScale.Crop,
+                alignment = Alignment.Center
+            ),
+            previewPlaceholder = R.drawable.alfiesweater
 
         )
     }
@@ -191,11 +195,13 @@ fun FoodItem() {
 }
 
 @Composable
-fun CardWithText() {
+fun CardWithText(meal: MealItem) {
     Card(
         shape = RoundedCornerShape(16.dp),
         elevation = 10.dp,
-        modifier = Modifier.height(300.dp).padding(bottom = 10.dp)
+        modifier = Modifier
+            .height(300.dp)
+            .padding(bottom = 10.dp)
     ) {
         Box(
             modifier = Modifier
@@ -205,7 +211,7 @@ fun CardWithText() {
         ) {
             Column() {
                 Text(
-                    text = "Alfred nu alearga dupa pisici, pentru ca ii este frica de ele",
+                    text = meal.strMeal,
                     fontFamily = fontSfProRounded,
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier.padding(horizontal = 16.dp),
@@ -219,5 +225,24 @@ fun CardWithText() {
 @Preview(showBackground = true)
 @Composable
 fun Preview() {
-    HomeScreen(navController = rememberNavController())
+    Column(
+        modifier = Modifier
+            .fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Spacer(modifier = Modifier.height(24.dp))
+        BaseTitle(
+            modifier = Modifier
+                .fillMaxWidth(0.8f)
+                .padding(horizontal = 50.dp)
+                .align(Alignment.Start),
+            R.string.home_title
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        SearchBar(onClick = { })
+        Spacer(modifier = Modifier.height(24.dp))
+        MealCategoryList(MockedDataHome.listOfCategory) {}
+        Spacer(modifier = Modifier.height(24.dp))
+        ListMeals(MockedDataHome.listOfItems)
+    }
 }
