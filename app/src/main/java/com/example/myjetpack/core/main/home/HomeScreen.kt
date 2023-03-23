@@ -24,6 +24,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -158,7 +159,7 @@ fun FoodItem(meal: MealItem) {
         contentAlignment = Alignment.TopCenter,
         modifier = Modifier
             .padding(top = 90.dp)
-            .wrapContentSize()
+            .height(248.dp)
     ) {
         CardWithText(meal)
         GlideImage(
@@ -200,13 +201,13 @@ fun CardWithText(meal: MealItem) {
         shape = RoundedCornerShape(16.dp),
         elevation = 10.dp,
         modifier = Modifier
-            .height(300.dp)
+            .fillMaxHeight()
             .padding(bottom = 10.dp)
     ) {
         Box(
             modifier = Modifier
                 .width(220.dp)
-                .fillMaxHeight(),
+                .height(248.dp),
             contentAlignment = Alignment.Center
         ) {
             Column() {
@@ -215,7 +216,9 @@ fun CardWithText(meal: MealItem) {
                     fontFamily = fontSfProRounded,
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier.padding(horizontal = 16.dp),
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
+                    maxLines = 3,
+                    overflow = TextOverflow.Ellipsis
                 )
             }
         }
