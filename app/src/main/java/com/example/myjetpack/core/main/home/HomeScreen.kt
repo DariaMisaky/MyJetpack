@@ -59,7 +59,7 @@ fun HomeScreen(
             R.string.home_title
         )
         Spacer(modifier = Modifier.height(16.dp))
-        SearchBar(onClick = { navController.navigate(Screens.TipScreen.route) })
+        SearchBar(onClick = { navController.navigate(Screens.SearchScreens.route) })
         Spacer(modifier = Modifier.height(24.dp))
         MealCategoryList(homeViewModel.mealCategories.value.categories) { homeViewModel.getMealListByCategory(it) }
         Spacer(modifier = Modifier.height(24.dp))

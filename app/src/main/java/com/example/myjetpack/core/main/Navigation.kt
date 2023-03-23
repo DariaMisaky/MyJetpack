@@ -21,6 +21,7 @@ import com.example.myjetpack.R
 import com.example.myjetpack.core.main.favorites.FavoritesScreen
 import com.example.myjetpack.core.main.home.HomeScreen
 import com.example.myjetpack.core.main.profile.ProfileScreen
+import com.example.myjetpack.core.main.search.SearchScreen
 import com.example.myjetpack.core.main.tipScreen.TipScreen
 import com.example.myjetpack.data.models.BottomNavModel
 
@@ -29,6 +30,9 @@ fun Navigation(navController: NavHostController) {
     NavHost(navController = navController, startDestination = Screens.MainScreens.route) {
         composable(route = Screens.MainScreens.route) {
             HomeScreen(navController = navController)
+        }
+        composable(route = Screens.SearchScreens.route) {
+            SearchScreen(navController = navController)
         }
         composable(route = Screens.FavoritesScreens.route) {
             FavoritesScreen(navController = navController)
