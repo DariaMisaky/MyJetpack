@@ -5,49 +5,30 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.myjetpack.data.models.MealCategories
-import com.example.myjetpack.data.models.MealListModel
+import com.example.myjetpack.data.models.MealSearchedModel
 import com.example.myjetpack.shared.base.Result
-import com.example.myjetpack.shared.usecases.GetMealCategoriesUseCase
-import com.example.myjetpack.shared.usecases.GetMealListByCatergoryUseCase
+import com.example.myjetpack.shared.usecases.GetMealListWithSearchUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(
-    private val getMealCategoriesUseCase: GetMealCategoriesUseCase,
-    private val getMealListByCategoryUseCase: GetMealListByCatergoryUseCase
+    private val getMealListWithSearchUseCase: GetMealListWithSearchUseCase
 ) : ViewModel() {
 
-    private val _mealCategories = mutableStateOf(MealCategories(mutableListOf()))
-    val mealCategories: State<MealCategories> = _mealCategories
-
-    private val _mealList = mutableStateOf(MealListModel(mutableListOf()))
-    val mealList: State<MealListModel> = _mealList
+    private val _mealsSearchedList = mutableStateOf(MealSearchedModel(mutableListOf()))
+    val mealsSearchedList: State<MealSearchedModel> = _mealsSearchedList
 
     init {
-        getMealCategories()
+        getMealCategories("")
     }
 
-    private fun getMealCategories() {
+    fun getMealCategories(searchedText: String) {
         viewModelScope.launch {
-            when (val result = getMealCategoriesUseCase.run(Unit)) {
+            when (val result = getMealListWithSearchUseCase.run(searchedText)) {
                 is Result.Success -> {
-                    _mealCategories.value = result.data
-                    getMealListByCategory(result.data.categories.first().category)
-                }
-                is Result.Error -> Log.d("ContentValue", result.error)
-                else -> {}
-            }
-        }
-    }
-
-    fun getMealListByCategory(category: String) {
-        viewModelScope.launch {
-            when (val result = getMealListByCategoryUseCase.run(category)) {
-                is Result.Success -> {
-                    _mealList.value = result.data
+                    _mealsSearchedList.value = result.data
                 }
                 is Result.Error -> Log.d("ContentValue", result.error)
                 else -> {}

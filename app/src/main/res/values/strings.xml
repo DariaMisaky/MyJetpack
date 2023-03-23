@@ -12,4 +12,11 @@
     <string name="favorite_screen">Favorite</string>
     <string name="profile_screen">Profile</string>
 
+<!--    Search Screen-->
+    <string name="item_not_found">Item not found</string>
+    <string name="try_searching">Try searching the item with a different keyword</string>
+    <string name="found_results">Found %s results</string>
+
+
+
 </resources>
