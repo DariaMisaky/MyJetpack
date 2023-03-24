@@ -21,6 +21,7 @@ import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -48,11 +49,17 @@ fun BaseTitle(modifier: Modifier, text: Int) {
 }
 
 @Composable
-fun BackButton(navController: NavHostController) {
+fun BackButton(navController: NavHostController, paddingTopValue: Dp = 20.dp, paddingBottomValue: Dp = 20.dp) {
     Icon(
         imageVector = Icons.Default.ArrowBack,
         contentDescription = null,
         tint = Color.Black,
-        modifier = Modifier.padding(20.dp).size(34.dp).clickable { navController.popBackStack() }
+        modifier = Modifier.padding(
+            top = paddingTopValue,
+            bottom = paddingBottomValue,
+            start = 20.dp,
+            end = 20.dp
+        )
+            .size(34.dp).clickable { navController.popBackStack() }
     )
 }

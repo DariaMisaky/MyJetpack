@@ -18,6 +18,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.myjetpack.R
+import com.example.myjetpack.core.main.details.DetailsScreen
 import com.example.myjetpack.core.main.favorites.FavoritesScreen
 import com.example.myjetpack.core.main.home.HomeScreen
 import com.example.myjetpack.core.main.profile.ProfileScreen
@@ -36,6 +37,9 @@ fun Navigation(navController: NavHostController) {
         }
         composable(route = Screens.FavoritesScreens.route) {
             FavoritesScreen(navController = navController)
+        }
+        composable(route = Screens.DetailsScreens.route) {
+            DetailsScreen(navController = navController)
         }
         composable(route = Screens.ProfileScreen.route) {
             ProfileScreen(navController = navController)

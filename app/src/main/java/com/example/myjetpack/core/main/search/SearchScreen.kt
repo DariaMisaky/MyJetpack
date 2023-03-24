@@ -2,6 +2,7 @@ package com.example.myjetpack.core.main.search
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.* // ktlint-disable no-wildcard-imports
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -34,6 +35,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.myjetpack.R
+import com.example.myjetpack.core.main.Screens
 import com.example.myjetpack.core.theme.fontSfPro
 import com.example.myjetpack.core.theme.fontSfProRounded
 import com.example.myjetpack.data.BackButton
@@ -66,7 +68,7 @@ fun SearchScreenComposable(navController: NavHostController, viewModel: SearchVi
             }
         }
         viewModel.mealsSearchedList.value.listOfSearchedMeals?.let {
-            CardWithSearchedResults(listOfMeals = it)
+            CardWithSearchedResults(listOfMeals = it, navController)
         } ?: NoResult()
     }
 }
@@ -104,7 +106,7 @@ fun NoResult() {
 }
 
 @Composable
-fun CardWithSearchedResults(listOfMeals: List<MealSearchedItem>) {
+fun CardWithSearchedResults(listOfMeals: List<MealSearchedItem>, navController: NavHostController) {
     Card(
         shape = RoundedCornerShape(24.dp),
         modifier = Modifier
@@ -124,7 +126,7 @@ fun CardWithSearchedResults(listOfMeals: List<MealSearchedItem>) {
                 fontFamily = fontSfPro,
                 fontWeight = FontWeight.ExtraBold
             )
-            ListMealsSearch(mealsList = listOfMeals)
+            ListMealsSearch(mealsList = listOfMeals, navController)
         }
     }
 }
@@ -166,7 +168,7 @@ fun HintTextField(modifier: Modifier) {
 }
 
 @Composable
-fun ListMealsSearch(mealsList: List<MealSearchedItem>) {
+fun ListMealsSearch(mealsList: List<MealSearchedItem>, navController: NavHostController) {
     LazyVerticalGrid(
         contentPadding = PaddingValues(bottom = 24.dp, top = 10.dp),
         columns = GridCells.Fixed(2),
@@ -180,25 +182,26 @@ fun ListMealsSearch(mealsList: List<MealSearchedItem>) {
                     Modifier
                 }
             ) {
-                FoodItemSearch(meal = meal)
+                FoodItemSearch(meal = meal, navController)
             }
         }
     }
 }
 
 @Composable
-fun FoodItemSearch(meal: MealSearchedItem) {
-    CardWithTextSearch(meal)
+fun FoodItemSearch(meal: MealSearchedItem, navController: NavHostController) {
+    CardWithTextSearch(meal, navController)
 }
 
 @Composable
-fun CardWithTextSearch(meal: MealSearchedItem) {
+fun CardWithTextSearch(meal: MealSearchedItem, navController: NavHostController) {
     Card(
         shape = RoundedCornerShape(16.dp),
         elevation = 10.dp,
         modifier = Modifier
             .height(200.dp)
             .padding(bottom = 10.dp)
+            .clickable { navController.navigate(Screens.DetailsScreens.route) }
     ) {
         Column {
             GlideImage(
@@ -274,7 +277,7 @@ fun Preview() {
                         .align(Alignment.Start),
                     text = R.string.home_title
                 )
-                ListMealsSearch(mealsList = MockedDataSearch.listOfSerchedItems)
+                ListMealsSearch(mealsList = MockedDataSearch.listOfSerchedItems, rememberNavController())
             }
         }
     }

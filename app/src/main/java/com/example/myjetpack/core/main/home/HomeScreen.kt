@@ -29,6 +29,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.myjetpack.R
 import com.example.myjetpack.core.main.Screens
 import com.example.myjetpack.core.theme.fontSfProRounded
@@ -64,7 +65,7 @@ fun HomeScreen(
         Spacer(modifier = Modifier.height(24.dp))
         MealCategoryList(homeViewModel.mealCategories.value.categories) { homeViewModel.getMealListByCategory(it) }
         Spacer(modifier = Modifier.height(24.dp))
-        ListMeals(homeViewModel.mealList.value.meals)
+        ListMeals(homeViewModel.mealList.value.meals, navController)
     }
 }
 
@@ -85,10 +86,10 @@ fun MealCategoryList(categories: List<MealCategory>, onCategoryClicked: (categor
 }
 
 @Composable
-fun ListMeals(mealsList: List<MealItem>) {
+fun ListMeals(mealsList: List<MealItem>, navController: NavHostController) {
     LazyRow(contentPadding = PaddingValues(start = 50.dp)) {
         itemsIndexed(items = mealsList) { index, meal ->
-            FoodItem(meal = meal)
+            FoodItem(meal = meal, navController)
         }
     }
 }
@@ -154,12 +155,13 @@ fun MealCategoryItem(item: MealCategory, selected: Boolean, onSelected: (categor
 }
 
 @Composable
-fun FoodItem(meal: MealItem) {
+fun FoodItem(meal: MealItem, navController: NavHostController) {
     Box(
         contentAlignment = Alignment.TopCenter,
         modifier = Modifier
             .padding(top = 90.dp)
             .height(248.dp)
+            .clickable { navController.navigate(Screens.DetailsScreens.route) }
     ) {
         CardWithText(meal)
         GlideImage(
@@ -246,6 +248,6 @@ fun Preview() {
         Spacer(modifier = Modifier.height(24.dp))
         MealCategoryList(MockedDataHome.listOfCategory) {}
         Spacer(modifier = Modifier.height(24.dp))
-        ListMeals(MockedDataHome.listOfItems)
+        ListMeals(MockedDataHome.listOfItems, rememberNavController())
     }
 }
